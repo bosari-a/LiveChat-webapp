@@ -13,15 +13,14 @@ module.exports = {
 
 module.exports = {
   mode: "development",
-  entry: "./src/chatroom.js",
+  entry: "./src/login.js",
   output: {
     path: path.resolve(__dirname, "dist"),
-    filename: "chatroom-bundle.js",
+    filename: "login-bundle.js",
   },
   devtool: "eval-source-map",
   watch: true,
 };
-
 module.exports = {
   mode: "development",
   entry: "./src/signup.js",
@@ -34,10 +33,10 @@ module.exports = {
 };
 module.exports = {
   mode: "development",
-  entry: "./src/login.js",
+  entry: "./src/chatroom.js",
   output: {
     path: path.resolve(__dirname, "dist"),
-    filename: "login-bundle.js",
+    filename: "chatroom-bundle.js",
   },
   devtool: "eval-source-map",
   watch: true,

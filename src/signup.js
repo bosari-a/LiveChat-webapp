@@ -58,9 +58,10 @@ signupForm.addEventListener("submit", (event) => {
       uid: uniqueId,
       createdAt: date.toString(),
     };
-    setDoc(docRef, user);
-    document.forms[0].reset();
-    window.location.replace("chatroom.html");
+    setDoc(docRef, user).then(() => {
+      document.forms[0].reset();
+      window.location.replace("chatroom.html");
+    });
   });
 });
 
