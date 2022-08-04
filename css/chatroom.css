@@ -23,7 +23,6 @@ h2 {
   align-items: center;
 }
 .chatrooms {
-  margin-left: 20px;
   width: 45vw;
   background: #43d9be;
   border-radius: 5px;
@@ -132,4 +131,26 @@ input:focus {
   width: 30vw;
   border-radius: 5px;
   text-align: center;
+}
+.message-container {
+  width: 45vw;
+  border: 1px solid lightgray;
+  background: white;
+  padding: 10px;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.user-message {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.clock {
+  width: 15px;
+}
+
+.user-img{
+    width: 30px;
 }
