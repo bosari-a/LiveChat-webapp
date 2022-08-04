@@ -63,7 +63,7 @@ input {
 }
 input:focus {
   outline: none;
-  box-shadow: 0 0 5px lightblue;
+  box-shadow: 0 0 10px #43d9be;
 }
 .checkbox {
   background: #43d9be;
