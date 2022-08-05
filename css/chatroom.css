@@ -249,6 +249,19 @@ textarea:focus {
     width: 90vw;
     margin: 0 auto;
   }
+  .chatrooms,
+  .rooms {
+    width: 85vw;
+    margin: 0 auto;
+  }
+  .message-container,
+  textarea {
+    width: 85vw;
+  }
+  .checkbox,
+  .checkbox-checked {
+    width: 80%;
+  }
 }
 @media screen and (max-width: 680px) {
   .user-input {
