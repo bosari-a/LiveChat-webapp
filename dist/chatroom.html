@@ -7,7 +7,37 @@
     <link rel="stylesheet" href="/css/chatroom.css" />
     <title>Global Chat</title>
   </head>
-  <body id="body">
+  <body>
+    <nav class="nav-bar">
+      <a href="index.html">
+        <img
+          class="my-app-logo"
+          src="/dist/my-chat-logo.png"
+          alt="logo of chat app"
+        />
+      </a>
+      <div class="current-user display">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="user-img"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            class="user-img"
+            fill-rule="evenodd"
+            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+        <div class="username-and-email">
+          <span class="username"></span>
+          <span class="email"></span>
+        </div>
+      </div>
+      <input class="display" type="button" id="login-btn" value="Login" />
+      <input type="button" id="logout" class="logout-btn" value="Logout" />
+    </nav>
     <h1>Global Chat</h1>
     <h2>Choose a chatroom:</h2>
     <form class="add">
@@ -101,12 +131,14 @@
           </svg>
           <span>12:32 am</span>
         </div>
-        <span>I like #general</span>
+        <span class="text-msg"
+          >I like
+          #generallllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll</span
+        >
       </div>
 
       <div class="user-input">
-        <label class="your-msg" for="message">Your message:</label>
-        <input id="message" class="message" type="text" name="message" />
+        <textarea name="" id="user-input-text" cols="50" rows="1"></textarea>
         <input id="send-btn" class="btn-form" type="submit" value="Send" />
       </div>
     </form>

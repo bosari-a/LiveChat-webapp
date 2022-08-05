@@ -13,6 +13,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   onAuthStateChanged,
+  updateProfile,
 } from "firebase/auth";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -31,6 +32,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth();
+const user = auth.currentUser;
 
 const colRef = collection(db, "users");
 onSnapshot(colRef, (snapshot) => {
@@ -51,17 +53,22 @@ signupForm.addEventListener("submit", (event) => {
   let docRef = doc(db, "users", usrname);
   let date = new Date(Date.now());
   createUserWithEmailAndPassword(auth, emailAdress, password).then((cred) => {
-    let uniqueId = cred.user.uid;
-    let user = {
-      email: emailAdress,
-      username: usrname,
-      uid: uniqueId,
-      createdAt: date.toString(),
-    };
-    setDoc(docRef, user).then(() => {
+    updateProfile(auth.currentUser, {
+      displayName: usrname,
+    }).then(() => {
+      console.log("profile updated");
       document.forms[0].reset();
       window.location.replace("chatroom.html");
     });
+    // let user = {
+    //   email: emailAdress,
+    //   username: usrname,
+    //   createdAt: date.toString(),
+    // };
+    // setDoc(docRef, user).then(() => {
+    //   document.forms[0].reset();
+    //   window.location.replace("chatroom.html");
+    // });
   });
 });
 

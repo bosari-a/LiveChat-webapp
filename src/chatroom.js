@@ -14,6 +14,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   onAuthStateChanged,
+  signOut,
 } from "firebase/auth";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -41,21 +42,28 @@ const colRef = collection(db, "users");
 //   });
 // });
 
-// onAuthStateChanged(auth, (data) => {
-//   const cred = data.uid;
-//   getDocs(colRef).then((data) => {
-//     data.docs.forEach((doc) => {
-//       if (cred == doc.data().uid) {
-//         console.log(doc.data().username);
-//       }
-//     });
-//   });
-// });
+onAuthStateChanged(auth, (user) => {
+  console.log(user);
+  if (user) {
+    document.querySelector("#login-btn").classList.add("display");
+    document.querySelector(".current-user").classList.remove("display");
+    document.querySelector(".email").innerText = user.email;
+    document.querySelector(".username").innerText = user.displayName;
+  } else if (!user) {
+    document.querySelector("#login-btn").classList.remove("display");
+    document.querySelector(".current-user").classList.add("display");
+    document.querySelector("#logout").classList.add("display");
+  }
+});
 
-
-
-
-
+const logoutBtn = document.querySelector("#logout");
+logoutBtn.addEventListener("click", (event) => {
+  event.preventDefault();
+  signOut(auth).then(() => {
+    console.log("user has signed out");
+    window.location.reload();
+  });
+});
 
 const checkboxes = document.querySelectorAll(".checkbox-input");
 const rooms = document.querySelector(".rooms");
@@ -83,3 +91,6 @@ function checkSelectedRoom(checkboxes) {
     }
   }
 }
+document.querySelector("#login-btn").addEventListener("click", () => {
+  window.location.href = "login.html";
+});

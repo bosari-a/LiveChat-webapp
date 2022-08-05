@@ -40,10 +40,13 @@ const colRef = collection(db, "users");
 console.log("hi");
 document.forms[0].addEventListener("submit", (event) => {
   event.preventDefault();
-  const username = document.forms[0].email.value;
-  const password = document.forms[0].password.value;
-  const docRef = doc(db, "users", username);
-  getDoc(docRef).then((doc) => {
-    console.log(doc.data().email);
+  let password = document.forms[0].password.value;
+  let email = document.forms[0].email.value;
+  signInWithEmailAndPassword(auth, email, password).then(() => {
+    window.location.replace("chatroom.html");
   });
+});
+
+onAuthStateChanged(auth, (user) => {
+  console.log(user);
 });

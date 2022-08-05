@@ -34,5 +34,32 @@ initializeApp(firebaseConfig);
 // database initiallize service
 const db = getFirestore();
 const auth = getAuth();
+onAuthStateChanged(auth, (user) => {
+  console.log(user);
+  if (user) {
+    document.querySelector("#login-btn").classList.add("display");
+    document.querySelector(".current-user").classList.remove("display");
+    document.querySelector(".email").innerText = user.email;
+    document.querySelector(".username").innerText = user.displayName;
+  } else if (!user) {
+    document.querySelector("#login-btn").classList.remove("display");
+    document.querySelector(".current-user").classList.add("display");
+    document.querySelector("#logout").classList.add("display");
+  }
+});
+
+const logoutBtn = document.querySelector("#logout");
+logoutBtn.addEventListener("click", (event) => {
+  event.preventDefault();
+  signOut(auth).then(() => {
+    console.log("user has signed out");
+    window.location.reload();
+  });
+});
+
 // collection reference
 const colRef = collection(db, "chats");
+
+document.querySelector("#login-btn").addEventListener("click", () => {
+  window.location.href = "login.html";
+});
