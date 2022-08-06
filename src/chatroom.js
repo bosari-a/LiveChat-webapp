@@ -85,7 +85,9 @@ rooms.addEventListener("click", (e) => {
         for (const chatLog in doc.data()) {
           if (doc.data()[chatLog].room === e.target.innerText) {
             //createUserMessage(doc.data()[chatLog], doc);
+            console.log(orderChatLogsById(doc.data()));
             orderChatLogsById(doc.data()).forEach((id) => {
+              console.log(id);
               createUserMessage(doc.data()[`chatLog${id}`], doc);
             });
           }
@@ -237,9 +239,13 @@ function createUserMessage(chatLog, doc) {
 function orderChatLogsById(data) {
   let idArr = [];
   for (const key in data) {
-    idArr.push(data[key].id.slice(1));
+    idArr.push(Number(data[key].id.slice(1)));
   }
-  return idArr.sort();
+  let sortedIdArr = idArr.sort(function (a, b) {
+    return a - b;
+  });
+  console.log(sortedIdArr);
+  return sortedIdArr;
 }
 // end
 document.querySelector("#login-btn").addEventListener("click", () => {
@@ -248,6 +254,17 @@ document.querySelector("#login-btn").addEventListener("click", () => {
 onSnapshot(colRef, (snapshot) => {
   snapshot.docs.forEach((doc) => {});
   //console.log("onsnapshot triggered:", users);
+  const unsubAuth = onAuthStateChanged(auth, (user) => {
+    let docRef = doc(db, "users", user.displayName);
+    getDoc(docRef).then((doc) => {
+      doc.data()
+        ? console.log(doc.data(), "user already exists!")
+        : setDoc(docRef, { chatLog0: { id: "_0" } }).then(() => {
+            console.log("user has been created!");
+          });
+    });
+  });
+  unsubAuth();
 });
 
 // getDoc(docRef).then((doc) => {
