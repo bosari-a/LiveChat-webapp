@@ -10,6 +10,8 @@ import {
   setDoc,
   updateDoc,
   serverTimestamp,
+  query,
+  orderBy,
 } from "firebase/firestore";
 import {
   getAuth,
@@ -37,7 +39,7 @@ const db = getFirestore(app);
 const auth = getAuth();
 
 const colRef = collection(db, "users");
-
+const q = query(colRef, orderBy("timestamp"));
 onAuthStateChanged(auth, () => {
   console.log(auth.currentUser);
   if (auth.currentUser) {
@@ -53,7 +55,7 @@ onAuthStateChanged(auth, () => {
     getDoc(docRef).then((doc) => {
       doc.data()
         ? console.log(doc.data(), "user already exists!")
-        : setDoc(docRef, { chatLog0: { id: 0 } }).then(() => {
+        : setDoc(docRef, { chatLog0: { id: "_0" } }).then(() => {
             console.log("user has been created!");
           });
     });
@@ -82,7 +84,10 @@ rooms.addEventListener("click", (e) => {
         console.log(doc.data());
         for (const chatLog in doc.data()) {
           if (doc.data()[chatLog].room === e.target.innerText) {
-            createUserMessage(doc.data()[chatLog], doc);
+            //createUserMessage(doc.data()[chatLog], doc);
+            orderChatLogsById(doc.data()).forEach((id) => {
+              createUserMessage(doc.data()[`chatLog${id}`], doc);
+            });
           }
         }
         let currentMessages = document.querySelectorAll(".user-message");
@@ -119,7 +124,7 @@ document.forms[0].addEventListener("submit", (event) => {
           return Math.max(...idArr);
         }
         let date = new Date(Date.now());
-        updateDoc(docRef, {
+        let chatLogs = {
           ...doc.data(),
           [`chatLog${findLastId() + 1}`]: {
             id: `_${findLastId() + 1}`,
@@ -127,9 +132,11 @@ document.forms[0].addEventListener("submit", (event) => {
             timeSent: date.toLocaleTimeString(),
             message: userMessage,
           },
-        }).then((data) => {
-          console.log("doc updated", data);
+        };
+        updateDoc(docRef, chatLogs).then(() => {
+          console.log("doc updated");
           document.forms[0].userinput.value = null;
+          createUserMessage(chatLogs[`chatLog${findLastId() + 1}`], doc);
         });
       });
     });
@@ -225,6 +232,16 @@ function createUserMessage(chatLog, doc) {
   }
 }
 //end
+
+// this function orders chatlogs by id
+function orderChatLogsById(data) {
+  let idArr = [];
+  for (const key in data) {
+    idArr.push(data[key].id.slice(1));
+  }
+  return idArr.sort();
+}
+// end
 document.querySelector("#login-btn").addEventListener("click", () => {
   window.location.href = "login.html";
 });
