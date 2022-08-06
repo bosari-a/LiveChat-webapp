@@ -88,3 +88,12 @@ span {
     width: 63vw;
   }
 }
+@media screen and (max-width:430px){
+  
+  .container{
+    width: 95vw;
+  }
+  .login{
+    width: 80vw;
+  }
+}

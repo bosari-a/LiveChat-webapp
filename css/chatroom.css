@@ -188,6 +188,18 @@ textarea:focus {
   opacity: 1;
 }
 /*end*/
+
+/* dropdown functionality */
+#dropdown:checked +.rooms {
+  display: flex;
+}
+.dropdown-label{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+/* end */
+
 .general {
   background: #73a9ad;
   border: 1px solid #73a9ad;
