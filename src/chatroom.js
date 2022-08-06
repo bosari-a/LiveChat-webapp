@@ -114,7 +114,7 @@ document.forms[0].addEventListener("submit", (event) => {
         function findLastId() {
           let idArr = [];
           for (const key in doc.data()) {
-            idArr.push(doc.data()[key].id);
+            idArr.push(Number(doc.data()[key].id.slice(1)));
           }
           return Math.max(...idArr);
         }
@@ -180,7 +180,7 @@ function createUserMessage(chatLog, doc) {
     let messageTemplate = `
     <div class="message-header">
     <span class="room-name display"></span>
-    <span id="${chatLog.id}"></span>
+    <span class="display" id="${chatLog.id}"></span>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         class="user-img"
