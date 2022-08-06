@@ -96,11 +96,6 @@ h2 {
   padding: 20px 0;
   width: 45vw;
 }
-.drop-down {
-  color: white;
-  display: flex;
-  justify-content: center;
-}
 .down-arrow {
   color: white;
   width: 25px;
@@ -190,16 +185,29 @@ textarea:focus {
 /*end*/
 
 /* dropdown functionality */
-#dropdown:checked +.rooms {
+#dropdown:checked + .rooms {
   display: flex;
 }
-.dropdown-label{
+.dropdown-label {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  justify-content: center;
 }
 /* end */
-
+/* selecting rooms button styles */
+.checkbox-input:checked + .checkbox,
+.checkbox-input:checked + .checkbox:hover {
+  background: white;
+  color: black;
+  border: 1px solid black;
+  cursor: pointer;
+  border-radius: 5px;
+  padding: 10px;
+  width: 30vw;
+  border-radius: 5px;
+  text-align: center;
+  box-shadow: none;
+}
+/**/
 .general {
   background: #73a9ad;
   border: 1px solid #73a9ad;
@@ -220,36 +228,38 @@ textarea:focus {
   border: 1px solid #f5f0bb;
   color: #003865;
 }
-.checkbox-checked {
-  background: white;
-  color: black;
-  border: 1px solid black;
-  cursor: pointer;
-  border-radius: 5px;
-  padding: 10px;
-  width: 30vw;
-  border-radius: 5px;
-  text-align: center;
-}
+
 .message-container {
-  width: 45vw;
-  border: 1px solid lightgray;
-  background: white;
-  padding: 10px;
-  border-radius: 5px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
+  max-width: 70vw;
+  margin: 0 auto;
 }
 .user-message {
   display: flex;
+  flex-direction: column;
+  border: 1px solid black;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
+.onmsg-username {
+  color: blueviolet;
+  font-size: 15px;
+}
+.message-header {
+  display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 10px;
+  padding-bottom: 15px;
 }
 .clock {
   width: 15px;
 }
-
+.time-sent {
+  color: #666;
+  font-size: 14px;
+}
 .user-img {
   width: 30px;
 }
