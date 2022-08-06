@@ -76,80 +76,25 @@ logoutBtn.addEventListener("click", (event) => {
 const rooms = document.querySelector(".rooms");
 rooms.addEventListener("click", (e) => {
   if (e.target.classList.contains("checkbox")) {
-    console.log("test point 1", checkSelectedRoom(), e.target.innerText);
     const unsubAuth = onAuthStateChanged(auth, (user) => {
       let docRef = doc(db, "users", user.displayName);
       getDoc(docRef).then((doc) => {
-        let chatLogs = doc.data();
-        //console.log(chatLogs);
-        for (const key in chatLogs) {
-          let chatLog = chatLogs[key];
-          for (const keys in chatLog) {
-            console.log(chatLog[keys]);
-            if (chatLog[keys] === e.target.innerText) {
-              let messageTemplate = `
-      <div class="message-header">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="user-img"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path
-            class="user-img"
-            fill-rule="evenodd"
-            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z"
-            clip-rule="evenodd"
-          />
-        </svg>
-        <span class="onmsg-username"></span>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="clock"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path
-            class="clock"
-            fill-rule="evenodd"
-            d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-            clip-rule="evenodd"
-          />
-        </svg>
-        <span class="time-sent"></span>
-      </div>
-  
-      <span class="text-msg"
-        ></span>
-    `;
-              let messageHTML = document.createElement("div");
-              messageHTML.classList.add("user-message");
-              messageHTML.innerHTML = messageTemplate;
-              messageHTML.querySelector(".time-sent").innerText =
-                chatLog.timeSent;
-              messageHTML.querySelector(
-                ".onmsg-username"
-              ).innerText = `@${doc.id}`;
-              messageHTML.querySelector(".text-msg").innerText =
-                chatLog.message;
-              document
-                .querySelector(".message-container")
-                .appendChild(messageHTML);
-              document
-                .querySelector(".message-container")
-                .classList.remove("display");
-            }
-            // if (chatLog.room !== checkSelectedRoom().value) {
-            //   console.log("removal");
-            //   document.querySelectorAll(".user-message").forEach((message) => {
-            //     message.remove();
-            //   });
-            // }
+        console.log(doc.data());
+        for (const chatLog in doc.data()) {
+          if (doc.data()[chatLog].room === e.target.innerText) {
+            createUserMessage(doc.data()[chatLog], doc);
           }
         }
+        // if (chatLog.room !== e.target.innerText) {
+        //   console.log("triggered");
+        //   document.querySelectorAll(".room-name").forEach((element) => {
+        //     if (chatLog.room !== element.innerText) {
+        //       element.parentElement.parentElement.remove();
+        //     }
+        //   });
+        // }
       });
     });
-    console.log("test point 2");
     document.querySelector("#set-room").innerText = e.target.innerText;
     changeBgColor(e.target.innerText.slice(1));
     unsubAuth();
@@ -177,7 +122,7 @@ document.forms[0].addEventListener("submit", (event) => {
         updateDoc(docRef, {
           ...doc.data(),
           [`chatLog${findLastId() + 1}`]: {
-            id: findLastId() + 1,
+            id: `_${findLastId() + 1}`,
             room: checkSelectedRoom().value,
             timeSent: date.toLocaleTimeString(),
             message: userMessage,
@@ -192,6 +137,9 @@ document.forms[0].addEventListener("submit", (event) => {
   }
 });
 
+// functions
+//this function checks which room is currently selected by user
+// *note: doesn't work when e.target is used
 function checkSelectedRoom() {
   let checkboxes = document.querySelectorAll(".checkbox-input");
   for (let i = 0; i < checkboxes.length; i++) {
@@ -200,9 +148,9 @@ function checkSelectedRoom() {
     }
   }
 }
-document.querySelector("#login-btn").addEventListener("click", () => {
-  window.location.href = "login.html";
-});
+//end
+
+// this function changes the background color of the page
 function changeBgColor(selectedRoom) {
   switch (selectedRoom) {
     case "general":
@@ -224,11 +172,64 @@ function changeBgColor(selectedRoom) {
       document.body.style.backgroundColor = "#fff";
   }
 }
+// end
 
+//this function creates a user message
+function createUserMessage(chatLog, doc) {
+  if (!document.querySelector(`#${chatLog.id}`)) {
+    let messageTemplate = `
+    <div class="message-header">
+    <span class="room-name display"></span>
+    <span id="${chatLog.id}"></span>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="user-img"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+      >
+        <path
+          class="user-img"
+          fill-rule="evenodd"
+          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z"
+          clip-rule="evenodd"
+        />
+      </svg>
+      <span class="onmsg-username"></span>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="clock"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+      >
+        <path
+          class="clock"
+          fill-rule="evenodd"
+          d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+          clip-rule="evenodd"
+        />
+      </svg>
+      <span class="time-sent"></span>
+    </div>
+
+    <span class="text-msg"
+      ></span>
+  `;
+    let messageHTML = document.createElement("div");
+    messageHTML.classList.add("user-message");
+    messageHTML.innerHTML = messageTemplate;
+    messageHTML.querySelector(".time-sent").innerText = chatLog.timeSent;
+    messageHTML.querySelector(".onmsg-username").innerText = `@${doc.id}`;
+    messageHTML.querySelector(".text-msg").innerText = chatLog.message;
+    messageHTML.querySelector(".room-name").innerText = chatLog.room;
+    document.querySelector(".message-container").appendChild(messageHTML);
+  }
+}
+//end
+document.querySelector("#login-btn").addEventListener("click", () => {
+  window.location.href = "login.html";
+});
 onSnapshot(colRef, (snapshot) => {
-  snapshot.docs.forEach((doc) => {
-    console.log(doc.data());
-  });
+  snapshot.docs.forEach((doc) => {});
   //console.log("onsnapshot triggered:", users);
 });
 
