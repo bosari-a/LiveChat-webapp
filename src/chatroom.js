@@ -85,14 +85,14 @@ rooms.addEventListener("click", (e) => {
             createUserMessage(doc.data()[chatLog], doc);
           }
         }
-        // if (chatLog.room !== e.target.innerText) {
-        //   console.log("triggered");
-        //   document.querySelectorAll(".room-name").forEach((element) => {
-        //     if (chatLog.room !== element.innerText) {
-        //       element.parentElement.parentElement.remove();
-        //     }
-        //   });
-        // }
+        let currentMessages = document.querySelectorAll(".user-message");
+        currentMessages.forEach((message) => {
+          if (
+            e.target.innerText !== message.querySelector(".room-name").innerText
+          ) {
+            message.remove();
+          }
+        });
       });
     });
     document.querySelector("#set-room").innerText = e.target.innerText;
