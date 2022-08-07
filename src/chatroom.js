@@ -92,6 +92,16 @@ logoutBtn.addEventListener("click", (event) => {
 });
 
 const rooms = document.querySelector(".rooms");
+const hrefs = document.querySelector(".hrefs");
+document.addEventListener("click", (e) => {
+  console.log(1, window.getComputedStyle(hrefs).left);
+  if (window.getComputedStyle(hrefs).left === "-136px" && e.target === hrefs) {
+    console.log(2);
+    hrefs.style.left = "-10px";
+  } else if (!hrefs.contains(e.target)) {
+    hrefs.style.left = "-136px";
+  }
+});
 rooms.addEventListener("click", (e) => {
   if (e.target.classList.contains("checkbox")) {
     let arrData = [];

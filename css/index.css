@@ -13,7 +13,8 @@ li {
   list-style: none;
   padding: 0;
 }
-body {
+body,
+html {
   background: rgb(206, 229, 208, 0.4);
   height: 100vh;
   width: 100%;
@@ -42,6 +43,8 @@ body {
 .nav-bar {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 20px;
 }
 .nav-bar li {
@@ -113,9 +116,6 @@ body {
   width: 90%;
   margin: 0 auto;
   border-radius: 20px;
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
 }
 .background-img {
   opacity: 0.8;
@@ -126,6 +126,7 @@ body {
   font-weight: 500;
   font-size: 35px;
   line-height: 47px;
+  width: 90%;
 }
 /* end */
 
@@ -189,7 +190,7 @@ body {
   opacity: 1;
 }
 /*end*/
-@media screen and (max-width: 500px) {
+/* @media screen and (max-width: 500px) {
   body {
     font-size: 12px;
   }
@@ -212,12 +213,12 @@ body {
   #text {
     font-size: 16px;
   }
-}
-@media screen and (max-width: 716px) {
+} */
+/* @media screen and (max-width: 716px) {
   .container {
     justify-content: center;
   }
-}
+} */
 /* display none */
 .display {
   display: none;
@@ -242,5 +243,8 @@ body {
     top: 10%;
     left: 50%;
     transform: translateX(-50%);
+  }
+  .github-link {
+    font-size: 16px;
   }
 }
