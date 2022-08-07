@@ -12,6 +12,7 @@ import {
   serverTimestamp,
   query,
   orderBy,
+  Timestamp,
 } from "firebase/firestore";
 import {
   getAuth,
@@ -39,8 +40,8 @@ const db = getFirestore(app);
 const auth = getAuth();
 
 const colRef = collection(db, "users");
-const q = query(colRef, orderBy("timestamp"));
-onAuthStateChanged(auth, () => {
+///const q = query(colRef, orderBy("timestamp"));
+onAuthStateChanged(auth, (user) => {
   console.log(auth.currentUser);
   if (auth.currentUser) {
     document.querySelector("#login-btn").classList.add("display");
@@ -51,11 +52,23 @@ onAuthStateChanged(auth, () => {
 
     // creating user
 
-    let docRef = doc(db, "users", auth.currentUser.displayName);
+    let docRef = doc(
+      db,
+      "users",
+      auth.currentUser.displayName.split(" ").join("")
+    );
     getDoc(docRef).then((doc) => {
       doc.data()
-        ? console.log(doc.data(), "user already exists!")
-        : setDoc(docRef, { chatLog0: { id: "_0" } }).then(() => {
+        ? console.log(
+            "user already exists!",
+            user.displayName.split(" ").join("")
+          )
+        : setDoc(docRef, {
+            [`chatLog${user.displayName.split(" ").join("")}0`]: {
+              id: `_${user.displayName.split(" ").join("")}0`,
+              username: user.displayName,
+            },
+          }).then(() => {
             console.log("user has been created!");
           });
     });
@@ -79,17 +92,61 @@ const rooms = document.querySelector(".rooms");
 rooms.addEventListener("click", (e) => {
   if (e.target.classList.contains("checkbox")) {
     const unsubAuth = onAuthStateChanged(auth, (user) => {
-      let docRef = doc(db, "users", user.displayName);
-      getDoc(docRef).then((doc) => {
-        console.log(doc.data());
-        for (const chatLog in doc.data()) {
-          if (doc.data()[chatLog].room === e.target.innerText) {
-            //createUserMessage(doc.data()[chatLog], doc);
-            console.log(orderChatLogsById(doc.data()));
-            orderChatLogsById(doc.data()).forEach((id) => {
-              console.log(id);
-              createUserMessage(doc.data()[`chatLog${id}`], doc);
-            });
+      // let docRef = doc(db, "users", user.displayName.split(" ").join(""));
+      // getDoc(docRef).then((doc) => {
+      //   console.log(doc.data());
+      //   for (const chatLog in doc.data()) {
+      //     if (doc.data()[chatLog].room === e.target.innerText) {
+      //       //createUserMessage(doc.data()[chatLog], doc);
+      //       console.log(orderChatLogsById(doc.data(), doc.id), doc.id);
+      //       orderChatLogsById(doc.data(), doc.id).forEach((sortedId) => {
+      //         console.log(sortedId);
+      //         createUserMessage(
+      //           doc.data()[`chatLog${doc.id + sortedId}`],
+      //           doc.data()[`chatLog${doc.id}0`].username,
+      //           e.target.innerText
+      //         );
+      //       });
+      //     }
+      //   }
+      //   let currentMessages = document.querySelectorAll(".user-message");
+      //   currentMessages.forEach((message) => {
+      //     if (
+      //       e.target.innerText !== message.querySelector(".room-name").innerText
+      //     ) {
+      //       message.remove();
+      //     }
+      //   });
+      // });
+      const unsubSnap = onSnapshot(colRef, (snapshot) => {
+        let users = [];
+        snapshot.docs.forEach((doc) => {
+          users.push({ chatLogs: { ...doc.data() }, id: doc.id });
+          //console.log(doc.data());
+        });
+        for (const user in users) {
+          console.log("128", users[user]);
+          for (const chatLog in users[user].chatLogs) {
+            if (e.target.innerText !== users[user].chatLogs[chatLog].room) {
+              continue;
+            }
+            console.log(
+              "130",
+              users[user].id,
+              users[user].chatLogs[chatLog],
+              chatLog,
+              e.target.innerText
+            );
+            orderChatLogsById(users[user].chatLogs, users[user].id).forEach(
+              (sortedId) => {
+                console.log(sortedId);
+                createUserMessage(
+                  users[user].chatLogs[`chatLog${users[user].id + sortedId}`],
+                  users[user].chatLogs[`chatLog${users[user].id}0`].username,
+                  e.target.innerText
+                );
+              }
+            );
           }
         }
         let currentMessages = document.querySelectorAll(".user-message");
@@ -100,6 +157,16 @@ rooms.addEventListener("click", (e) => {
             message.remove();
           }
         });
+
+        // orderChatLogsById(users.chatLogs, users.id).forEach((sortedId) => {
+        //   createUserMessage(
+        //     users.chatLogs[`chatLog${doc.id + sortedId}`],
+        //     users.chatLogs[`chatLog${doc.id}0`].username,
+        //     e.innerText
+        //   );
+        // });
+        console.log("success line 132");
+        unsubSnap();
       });
     });
     document.querySelector("#set-room").innerText = e.target.innerText;
@@ -110,26 +177,26 @@ rooms.addEventListener("click", (e) => {
 
 document.forms[0].addEventListener("submit", (event) => {
   event.preventDefault();
-  console.log("triggered submit");
+  console.log("triggered submit", checkSelectedRoom().value);
   if (checkSelectedRoom()) {
     console.log("triggered submit");
     const unsubAuth = onAuthStateChanged(auth, (user) => {
       let userMessage = document.forms[0].userinput.value;
-      let docRef = doc(db, "users", user.displayName);
+      let docRef = doc(db, "users", user.displayName.split(" ").join(""));
       getDoc(docRef).then((doc) => {
         console.log({ ...doc.data() });
         function findLastId() {
           let idArr = [];
           for (const key in doc.data()) {
-            idArr.push(Number(doc.data()[key].id.slice(1)));
+            idArr.push(Number(doc.data()[key].id.slice(doc.id.length + 1)));
           }
-          return Math.max(...idArr);
+          return Math.max(...idArr) + 1;
         }
         let date = new Date(Date.now());
         let chatLogs = {
           ...doc.data(),
-          [`chatLog${findLastId() + 1}`]: {
-            id: `_${findLastId() + 1}`,
+          [`chatLog${doc.id + findLastId()}`]: {
+            id: `_${doc.id + findLastId()}`,
             room: checkSelectedRoom().value,
             timeSent: date.toLocaleTimeString(),
             message: userMessage,
@@ -138,7 +205,11 @@ document.forms[0].addEventListener("submit", (event) => {
         updateDoc(docRef, chatLogs).then(() => {
           console.log("doc updated");
           document.forms[0].userinput.value = null;
-          createUserMessage(chatLogs[`chatLog${findLastId() + 1}`], doc);
+          createUserMessage(
+            chatLogs[`chatLog${doc.id + findLastId()}`],
+            doc.data()[`chatLog${doc.id}0`].username,
+            checkSelectedRoom().value
+          );
         });
       });
     });
@@ -184,62 +255,65 @@ function changeBgColor(selectedRoom) {
 // end
 
 //this function creates a user message
-function createUserMessage(chatLog, doc) {
-  if (!document.querySelector(`#${chatLog.id}`)) {
-    let messageTemplate = `
-    <div class="message-header">
-    <span class="room-name display"></span>
-    <span class="display" id="${chatLog.id}"></span>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="user-img"
-        viewBox="0 0 20 20"
-        fill="currentColor"
-      >
-        <path
+function createUserMessage(chatLog, username, currentRoom) {
+  if (!document.querySelector(`#${chatLog.id}`) && !chatLog.username) {
+    if (currentRoom === chatLog.room) {
+      console.log(chatLog.id, chatLog.username);
+      let messageTemplate = `
+      <div class="message-header">
+      <span class="room-name display"></span>
+      <span class="display" id="${chatLog.id}"></span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
           class="user-img"
-          fill-rule="evenodd"
-          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z"
-          clip-rule="evenodd"
-        />
-      </svg>
-      <span class="onmsg-username"></span>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="clock"
-        viewBox="0 0 20 20"
-        fill="currentColor"
-      >
-        <path
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            class="user-img"
+            fill-rule="evenodd"
+            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        <span class="onmsg-username"></span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
           class="clock"
-          fill-rule="evenodd"
-          d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-          clip-rule="evenodd"
-        />
-      </svg>
-      <span class="time-sent"></span>
-    </div>
-
-    <span class="text-msg"
-      ></span>
-  `;
-    let messageHTML = document.createElement("div");
-    messageHTML.classList.add("user-message");
-    messageHTML.innerHTML = messageTemplate;
-    messageHTML.querySelector(".time-sent").innerText = chatLog.timeSent;
-    messageHTML.querySelector(".onmsg-username").innerText = `@${doc.id}`;
-    messageHTML.querySelector(".text-msg").innerText = chatLog.message;
-    messageHTML.querySelector(".room-name").innerText = chatLog.room;
-    document.querySelector(".message-container").appendChild(messageHTML);
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            class="clock"
+            fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        <span class="time-sent"></span>
+      </div>
+  
+      <span class="text-msg"
+        ></span>
+    `;
+      let messageHTML = document.createElement("div");
+      messageHTML.classList.add("user-message");
+      messageHTML.innerHTML = messageTemplate;
+      messageHTML.querySelector(".time-sent").innerText = chatLog.timeSent;
+      messageHTML.querySelector(".onmsg-username").innerText = `@${username}`;
+      messageHTML.querySelector(".text-msg").innerText = chatLog.message;
+      messageHTML.querySelector(".room-name").innerText = chatLog.room;
+      document.querySelector(".message-container").appendChild(messageHTML);
+    }
   }
 }
 //end
 
 // this function orders chatlogs by id
-function orderChatLogsById(data) {
+function orderChatLogsById(data, docId) {
   let idArr = [];
   for (const key in data) {
-    idArr.push(Number(data[key].id.slice(1)));
+    idArr.push(Number(data[key].id.slice(docId.length + 1)));
   }
   let sortedIdArr = idArr.sort(function (a, b) {
     return a - b;
@@ -252,17 +326,28 @@ document.querySelector("#login-btn").addEventListener("click", () => {
   window.location.href = "login.html";
 });
 onSnapshot(colRef, (snapshot) => {
-  snapshot.docs.forEach((doc) => {});
-  //console.log("onsnapshot triggered:", users);
+  console.log(Timestamp.toDate());
+  let users = [];
+  snapshot.docs.forEach((doc) => {
+    users.push({ chatLogs: { ...doc.data() }, id: doc.id });
+  });
+  console.log("onsnapshot triggered:", users);
   const unsubAuth = onAuthStateChanged(auth, (user) => {
-    let docRef = doc(db, "users", user.displayName);
-    getDoc(docRef).then((doc) => {
-      doc.data()
-        ? console.log(doc.data(), "user already exists!")
-        : setDoc(docRef, { chatLog0: { id: "_0" } }).then(() => {
-            console.log("user has been created!");
-          });
-    });
+    if (user) {
+      let docRef = doc(db, "users", user.displayName.split(" ").join(""));
+      getDoc(docRef).then((doc) => {
+        doc.data()
+          ? console.log(doc.data(), "user already exists!")
+          : setDoc(docRef, {
+              [`chatLog${user.displayName.split(" ").join("")}0`]: {
+                id: `_${user.displayName.split(" ").join("")}0`,
+                username: user.displayName,
+              },
+            }).then(() => {
+              console.log("user has been created!");
+            });
+      });
+    }
   });
   unsubAuth();
 });
