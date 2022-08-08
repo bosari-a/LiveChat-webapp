@@ -487,6 +487,8 @@ document.addEventListener("click", (e) => {
       e.target.parentElement.parentElement.parentElement
         .querySelector(".onmsg-username")
         .innerText.slice(1)
+        .split(" ")
+        .join("")
     );
     let docRef = doc(
       db,
@@ -494,6 +496,8 @@ document.addEventListener("click", (e) => {
       e.target.parentElement.parentElement.parentElement
         .querySelector(".onmsg-username")
         .innerText.slice(1)
+        .split(" ")
+        .join("")
     );
     getDoc(docRef).then(() => {
       let data = {
@@ -518,6 +522,8 @@ document.addEventListener("click", (e) => {
         e.target.parentElement.parentElement.parentElement
           .querySelector(".onmsg-username")
           .innerText.slice(1)
+          .split(" ")
+          .join("")
       );
       let edit =
         e.target.parentElement.parentElement.parentElement.querySelector(
