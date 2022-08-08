@@ -94,9 +94,7 @@ logoutBtn.addEventListener("click", (event) => {
 const rooms = document.querySelector(".rooms");
 const hrefs = document.querySelector(".hrefs");
 document.addEventListener("click", (e) => {
-  console.log(1, window.getComputedStyle(hrefs).left);
   if (window.getComputedStyle(hrefs).left === "-136px" && e.target === hrefs) {
-    console.log(2);
     hrefs.style.left = "-10px";
   } else if (!hrefs.contains(e.target)) {
     hrefs.style.left = "-136px";
@@ -124,12 +122,9 @@ rooms.addEventListener("click", (e) => {
           timeSortedData = arrData.sort(
             (a, b) => a.timeSent.toMillis() - b.timeSent.toMillis()
           );
-          //console.log(sortedTest);
         }
       }
-      console.log(timeSortedData);
       timeSortedData.forEach((chatLog) => {
-        console.log("ELEMENT:", chatLog);
         createUserMessage(chatLog, chatLog.username, e.target.innerText);
       });
 
@@ -156,7 +151,6 @@ document.forms[0].addEventListener("submit", (event) => {
       let userMessage = document.forms[0].userinput.value;
       let docRef = doc(db, "users", user.displayName.split(" ").join(""));
       getDoc(docRef).then((doc) => {
-        console.log(doc);
         function findLastId() {
           let idArr = [];
           for (const key in doc.data()) {
@@ -252,6 +246,7 @@ function createUserMessage(chatLog, username, currentRoom) {
           />
         </svg>
         <span class="onmsg-username"></span>
+        <div class="time">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="clock"
@@ -265,7 +260,7 @@ function createUserMessage(chatLog, username, currentRoom) {
             clip-rule="evenodd"
           />
         </svg>
-        <span class="time-sent"></span>
+        <span class="time-sent"></span></div>
       </div>
   
       <span class="text-msg"
@@ -304,7 +299,6 @@ document.querySelector("#login-btn").addEventListener("click", () => {
   window.location.href = "login.html";
 });
 onSnapshot(q, (snapshot) => {
-  console.log(checkSelectedRoom());
   if (checkSelectedRoom()) {
     let currentMessages = document.querySelectorAll(".user-message");
     currentMessages.forEach((message) => {
@@ -329,12 +323,9 @@ onSnapshot(q, (snapshot) => {
         timeSortedData = arrData.sort(
           (a, b) => a.timeSent.toMillis() - b.timeSent.toMillis()
         );
-        //console.log(sortedTest);
       }
     }
-    console.log(timeSortedData);
     timeSortedData.forEach((chatLog) => {
-      console.log("ELEMENT:", chatLog);
       createUserMessage(chatLog, chatLog.username, checkSelectedRoom().value);
     });
     currentMessages.forEach((message) => {
