@@ -13,6 +13,7 @@ import {
   query,
   orderBy,
   Timestamp,
+  deleteField,
 } from "firebase/firestore";
 import {
   getAuth,
@@ -282,7 +283,7 @@ function createUserMessage(chatLog, username, currentRoom) {
             messageTemplate = `
             <div class="message-header">
             <span class="room-name display"></span>
-            <span class="display" id="${chatLog.id}"></span>
+            <span class="display chatLogId" id="${chatLog.id}">${chatLog.id}</span>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="user-img"
@@ -454,9 +455,37 @@ document.addEventListener("click", (e) => {
       }
     }
   }
-  if (!e.target.classList.contains("three-dots")) {
+  if (
+    !e.target.classList.contains("three-dots") &&
+    !e.target.classList.contains("edit") &&
+    !e.target.classList.contains("delete")
+  ) {
     document.querySelectorAll(".edit-delete").forEach((changePost) => {
       changePost.classList.add("display");
+    });
+  }
+  if (e.target.classList.contains("delete")) {
+    console.log(
+      e.target.parentElement.parentElement.parentElement
+        .querySelector(".onmsg-username")
+        .innerText.slice(1)
+    );
+    let docRef = doc(
+      db,
+      "users",
+      e.target.parentElement.parentElement.parentElement
+        .querySelector(".onmsg-username")
+        .innerText.slice(1)
+    );
+    getDoc(docRef).then(() => {
+      let data = {
+        [`chatLog${e.target.parentElement.parentElement.parentElement
+          .querySelector(".chatLogId")
+          .innerText.slice(1)}`]: deleteField(),
+      };
+      updateDoc(docRef, data).then(() => {
+        console.log("post deleted!");
+      });
     });
   }
 });
