@@ -488,6 +488,61 @@ document.addEventListener("click", (e) => {
       });
     });
   }
+  if (e.target.classList.contains("edit")) {
+    let docRef = doc(
+      db,
+      "users",
+      e.target.parentElement.parentElement.parentElement
+        .querySelector(".onmsg-username")
+        .innerText.slice(1)
+    );
+    let edit =
+      e.target.parentElement.parentElement.parentElement.querySelector(
+        ".text-msg"
+      ).innerText;
+    let editForm = document.createElement("form");
+    editForm.id = "edit-form";
+    editForm.innerHTML = `
+      <textarea class="edit-text" rows="2"></textarea>
+        <input type="submit" class="submit-edit" value="Submit" />
+    `;
+    editForm.querySelector(".edit-text").value = edit;
+    e.target.parentElement.parentElement.parentElement.querySelector(
+      ".text-msg"
+    ).innerText = "";
+    e.target.parentElement.parentElement.parentElement.appendChild(editForm);
+    e.target.parentElement.parentElement.parentElement
+      .querySelector("#edit-form")
+      .addEventListener("submit", (e) => {
+        e.preventDefault();
+        getDoc(docRef).then((doc) => {
+          console.log(doc.data());
+          let data = {
+            [`chatLog${e.target.parentElement
+              .querySelector(".chatLogId")
+              .innerText.slice(1)}`]: {
+              ...doc.data()[
+                `chatLog${e.target.parentElement
+                  .querySelector(".chatLogId")
+                  .innerText.slice(1)}`
+              ],
+              message: e.target.querySelector(".edit-text").value,
+            },
+          };
+          console.log(e.target.querySelector(".edit-text").value);
+          updateDoc(docRef, data).then(() => {
+            e.target.parentElement.remove();
+            console.log("edit success");
+            let edited = document.createElement("span");
+            edited.innerHTML = `            <span class="time-sent edited">(edited)</span>
+            `;
+            e.target.parentElement
+              .querySelector(".message-header")
+              .appendChild(edited);
+          });
+        });
+      });
+  }
 });
 
 // if I use e.target on the room click event listener then

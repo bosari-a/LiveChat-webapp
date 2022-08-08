@@ -201,6 +201,7 @@ textarea:focus {
   width: 100vw;
   padding-left: 25px;
   padding-right: 10px;
+  margin-bottom: 15px;
   display: flex;
   flex-direction: column;
   gap: 30px;
@@ -325,10 +326,6 @@ textarea:focus {
 }
 /*end*/
 
-.display {
-  display: none;
-}
-
 .time {
   display: flex;
   align-items: center;
@@ -390,7 +387,8 @@ textarea:focus {
   border-radius: 5px;
 }
 .three-dots {
-  width: 17px;
+  width: 20px;
+  color: orange;
   margin-bottom: 10px;
   cursor: pointer;
 }
@@ -399,11 +397,13 @@ textarea:focus {
   color: white;
   padding: 5px;
   border-radius: 5px;
-  width: 60px;
+  width: 70px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 .edit-delete p {
   cursor: pointer;
-  text-decoration: underline;
 }
 .change-post {
   display: flex;
@@ -411,4 +411,46 @@ textarea:focus {
   align-items: center;
   justify-content: flex-start;
   margin-bottom: 20px;
+}
+.edit,
+.delete {
+  border: 2px solid #777;
+  border-radius: 2px;
+  padding: 0 5px;
+}
+.edit:hover,
+.delete:hover {
+  box-shadow: 0 0 0 10000px inset rgba(255, 255, 255, 0.2);
+}
+
+/*edit form*/
+.edit-form {
+  width: 90%;
+  margin: 0 auto;
+}
+.submit-edit {
+  width: 60px;
+  margin-top: 10px;
+  border: 2px solid #003865;
+  background: #43d9be;
+  color: #003865;
+  box-shadow: none;
+  border-radius: 3px;
+  padding: 3px 0;
+  cursor: pointer;
+  align-self: flex-start;
+}
+.submit-edit:hover {
+  box-shadow: 0 0 10000px inset rgb(0, 0, 0, 0.2);
+}
+.edit-text {
+  min-width: 60vw;
+  width: fit-content;
+  resize: vertical;
+  margin-top: 5px;
+}
+/*end*/
+
+.display {
+  display: none;
 }
