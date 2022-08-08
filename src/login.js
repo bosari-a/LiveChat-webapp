@@ -40,11 +40,16 @@ const colRef = collection(db, "users");
 console.log("hi");
 document.forms[0].addEventListener("submit", (event) => {
   event.preventDefault();
+  document.querySelector(".loading").classList.remove("display");
   let password = document.forms[0].password.value;
   let email = document.forms[0].email.value;
-  signInWithEmailAndPassword(auth, email, password).then(() => {
-    window.location.replace("chatroom.html");
-  });
+  signInWithEmailAndPassword(auth, email, password)
+    .then(() => {
+      window.location.replace("chatroom.html");
+    })
+    .catch((err) => {
+      alert(err.message);
+    });
 });
 
 onAuthStateChanged(auth, (user) => {

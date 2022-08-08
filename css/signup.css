@@ -100,3 +100,6 @@ a {
     width: 85vw;
   }
 }
+.display {
+  display: none;
+}

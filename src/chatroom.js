@@ -146,44 +146,55 @@ rooms.addEventListener("click", (e) => {
 
 document.forms[0].addEventListener("submit", (event) => {
   event.preventDefault();
+  document.querySelector(".loading").classList.remove("display");
   if (checkSelectedRoom()) {
     const unsubAuth = onAuthStateChanged(auth, (user) => {
       let userMessage = document.forms[0].userinput.value;
-      let docRef = doc(db, "users", user.displayName.split(" ").join(""));
-      getDoc(docRef).then((doc) => {
-        function findLastId() {
-          let idArr = [];
-          for (const key in doc.data()) {
-            doc.data()[key].id
-              ? idArr.push(Number(doc.data()[key].id.slice(doc.id.length + 1)))
-              : null;
-          }
-          return Math.max(...idArr) + 1;
+      try {
+        if (userMessage === "" || userMessage == " ") {
+          throw Error("send a valid message!");
+        } else if (!user) {
+          throw Error("please login to send your messages!");
+        } else {
+          let docRef = doc(db, "users", user.displayName.split(" ").join(""));
+          getDoc(docRef).then((doc) => {
+            function findLastId() {
+              let idArr = [];
+              for (const key in doc.data()) {
+                doc.data()[key].id
+                  ? idArr.push(
+                      Number(doc.data()[key].id.slice(doc.id.length + 1))
+                    )
+                  : null;
+              }
+              return Math.max(...idArr) + 1;
+            }
+
+            let chatLogs = {
+              ...doc.data(),
+              lastUpdated: Timestamp.now(),
+              [`chatLog${doc.id + findLastId()}`]: {
+                id: `_${doc.id + findLastId()}`,
+                room: checkSelectedRoom().value,
+                timeSent: Timestamp.now(), // Timestamp.now().toDate().toLocaleString()
+                message: userMessage,
+              },
+            };
+            updateDoc(docRef, chatLogs).then(() => {
+              console.log("doc updated");
+            });
+            document.forms[0].userinput.value = null;
+          });
         }
-
-        let chatLogs = {
-          ...doc.data(),
-          lastUpdated: Timestamp.now(),
-          [`chatLog${doc.id + findLastId()}`]: {
-            id: `_${doc.id + findLastId()}`,
-            room: checkSelectedRoom().value,
-            timeSent: Timestamp.now(), // Timestamp.now().toDate().toLocaleString()
-            message: userMessage,
-          },
-        };
-        updateDoc(docRef, chatLogs).then(() => {
-          console.log("doc updated");
-
-          // createUserMessage(
-          //   chatLogs[`chatLog${doc.id + findLastId()}`],
-          //   doc.data()[`chatLog${doc.id}0`].username,
-          //   checkSelectedRoom().value
-          // );
-        });
-        document.forms[0].userinput.value = null;
-      });
+      } catch (err) {
+        alert(err.message);
+      }
     });
     unsubAuth();
+    document.querySelector(".loading").classList.add("display");
+  } else {
+    document.querySelector(".loading").classList.add("display");
+    alert("select a board to send your message!");
   }
 });
 
@@ -229,72 +240,138 @@ function createUserMessage(chatLog, username, currentRoom) {
   if (!document.querySelector(`#${chatLog.id}`) && !chatLog.chatLog0) {
     if (currentRoom === chatLog.room) {
       let messageTemplate = `
-      <div class="message-header">
-      <span class="room-name display"></span>
-      <span class="display" id="${chatLog.id}"></span>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="user-img"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path
-            class="user-img"
-            fill-rule="evenodd"
-            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z"
-            clip-rule="evenodd"
-          />
-        </svg>
-        <span class="onmsg-username"></span>
-        <div class="time">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="clock"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path
-            class="clock"
-            fill-rule="evenodd"
-            d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-            clip-rule="evenodd"
-          />
-        </svg>
-        <span class="time-sent"></span></div>
-      </div>
-  
-      <span class="text-msg"
-        ></span>
-    `;
-      let messageHTML = document.createElement("div");
-      messageHTML.classList.add("user-message");
-      messageHTML.innerHTML = messageTemplate;
-      messageHTML.querySelector(".time-sent").innerText = chatLog.timeSent
-        .toDate()
-        .toLocaleString();
-      messageHTML.querySelector(".onmsg-username").innerText = `@${username}`;
-      messageHTML.querySelector(".text-msg").innerText = chatLog.message;
-      messageHTML.querySelector(".room-name").innerText = chatLog.room;
-      document.querySelector(".message-container").appendChild(messageHTML);
+            <div class="message-header">
+            <span class="room-name display"></span>
+            <span class="display" id="${chatLog.id}"></span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="user-img"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  class="user-img"
+                  fill-rule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <span class="onmsg-username"></span>
+              <div class="time">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="clock"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  class="clock"
+                  fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <span class="time-sent"></span></div>
+            </div>
+            <span class="text-msg"
+              ></span>
+          `;
+      const unsubAuth = onAuthStateChanged(auth, (user) => {
+        if (user) {
+          if (user.displayName === username) {
+            messageTemplate = `
+            <div class="message-header">
+            <span class="room-name display"></span>
+            <span class="display" id="${chatLog.id}"></span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="user-img"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  class="user-img"
+                  fill-rule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <span class="onmsg-username"></span>
+              <div class="time">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="clock"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  class="clock"
+                  fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <span class="time-sent"></span></div>
+            </div>
+            <div class="change-post">
+            <svg xmlns="http://www.w3.org/2000/svg" class="three-dots" viewBox="0 0 20 20" fill="currentColor">
+        <path class="three-dots" fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd" />
+      </svg>
+        <div class="edit-delete display"> <p class="edit">Edit</p> <p class="delete">delete</p> </div> </div>
+            <span class="text-msg"
+              ></span>
+          `;
+            let messageHTML = document.createElement("div");
+            messageHTML.classList.add("user-message");
+            messageHTML.innerHTML = messageTemplate;
+            messageHTML.querySelector(".time-sent").innerText = chatLog.timeSent
+              .toDate()
+              .toLocaleString();
+            messageHTML.querySelector(
+              ".onmsg-username"
+            ).innerText = `@${username}`;
+            messageHTML.querySelector(".text-msg").innerText = chatLog.message;
+            messageHTML.querySelector(".room-name").innerText = chatLog.room;
+            document
+              .querySelector(".message-container")
+              .appendChild(messageHTML);
+          } else {
+            let messageHTML = document.createElement("div");
+            messageHTML.classList.add("user-message");
+            messageHTML.innerHTML = messageTemplate;
+            messageHTML.querySelector(".time-sent").innerText = chatLog.timeSent
+              .toDate()
+              .toLocaleString();
+            messageHTML.querySelector(
+              ".onmsg-username"
+            ).innerText = `@${username}`;
+            messageHTML.querySelector(".text-msg").innerText = chatLog.message;
+            messageHTML.querySelector(".room-name").innerText = chatLog.room;
+            document
+              .querySelector(".message-container")
+              .appendChild(messageHTML);
+          }
+        } else {
+          let messageHTML = document.createElement("div");
+          messageHTML.classList.add("user-message");
+          messageHTML.innerHTML = messageTemplate;
+          messageHTML.querySelector(".time-sent").innerText = chatLog.timeSent
+            .toDate()
+            .toLocaleString();
+          messageHTML.querySelector(
+            ".onmsg-username"
+          ).innerText = `@${username}`;
+          messageHTML.querySelector(".text-msg").innerText = chatLog.message;
+          messageHTML.querySelector(".room-name").innerText = chatLog.room;
+          document.querySelector(".message-container").appendChild(messageHTML);
+        }
+      });
+      unsubAuth();
     }
   }
 }
 //end
 
-// this function orders chatlogs by id
-function orderChatLogsById(data, docId) {
-  let idArr = [];
-  for (const key in data) {
-    data[key].id
-      ? idArr.push(Number(data[key].id.slice(docId.length + 1)))
-      : null;
-  }
-  let sortedIdArr = idArr.sort(function (a, b) {
-    return a - b;
-  });
-  return sortedIdArr;
-}
-// end
 document.querySelector("#login-btn").addEventListener("click", () => {
   window.location.href = "login.html";
 });
@@ -357,6 +434,31 @@ onSnapshot(q, (snapshot) => {
     }
   });
   unsubAuth();
+});
+
+document.addEventListener("click", (e) => {
+  if (e.target.classList.contains("three-dots")) {
+    if (e.target.parentElement.tagName === "svg") {
+      if (
+        e.target.parentElement.nextElementSibling.classList.contains("display")
+      ) {
+        e.target.parentElement.nextElementSibling.classList.remove("display");
+      } else {
+        e.target.parentElement.nextElementSibling.classList.add("display");
+      }
+    } else {
+      if (e.target.nextElementSibling.classList.contains("display")) {
+        e.target.nextElementSibling.classList.remove("display");
+      } else {
+        e.target.nextElementSibling.classList.add("display");
+      }
+    }
+  }
+  if (!e.target.classList.contains("three-dots")) {
+    document.querySelectorAll(".edit-delete").forEach((changePost) => {
+      changePost.classList.add("display");
+    });
+  }
 });
 
 // if I use e.target on the room click event listener then

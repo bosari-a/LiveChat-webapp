@@ -103,7 +103,7 @@
           <label class="checkbox hobbies" for="hobbies"> #hobbies </label>
         </div>
       </div>
-      <h2>Board is set to: <span id="set-room"></span></h2>
+      <h2 class="board-set-to">Board is set to: <span id="set-room"></span></h2>
       <h2>[<a href="#bottom" class="send-a-message">Send a message</a>]</h2>
 
       <div class="message-container">
@@ -160,9 +160,10 @@
       </div>
 
       <div class="user-input">
-        <textarea name="" id="userinput" cols="50" rows="1"></textarea>
+        <textarea name="" id="userinput" cols="50" rows="3"></textarea>
         <input id="send-btn" class="btn-form" type="submit" value="Send" />
         <a name="bottom"></a>
+        <span class="loading display" style="align-self: center">Loading...</span>
       </div>
     </form>
 

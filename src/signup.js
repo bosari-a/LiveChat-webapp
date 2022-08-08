@@ -47,31 +47,26 @@ const signupForm = document.forms[0];
 
 signupForm.addEventListener("submit", (event) => {
   event.preventDefault();
+  document.querySelector(".loading").classList.remove("display");
   let emailAdress = signupForm.email.value;
   let password = signupForm.password.value;
   let usrname = signupForm.username.value;
   let docRef = doc(db, "users", usrname);
-  let date = new Date(Date.now());
-  createUserWithEmailAndPassword(auth, emailAdress, password).then((cred) => {
-    updateProfile(auth.currentUser, {
-      displayName: usrname,
-    }).then(() => {
-      console.log("profile updated");
-      document.forms[0].reset();
-      window.location.replace("chatroom.html");
+  createUserWithEmailAndPassword(auth, emailAdress, password)
+    .then(() => {
+      updateProfile(auth.currentUser, {
+        displayName: usrname,
+      }).then(() => {
+        console.log("profile updated");
+        document.forms[0].reset();
+        window.location.replace("chatroom.html");
+      });
+    })
+    .catch((err) => {
+      alert(err.message);
     });
-    // let user = {
-    //   email: emailAdress,
-    //   username: usrname,
-    //   createdAt: date.toString(),
-    // };
-    // setDoc(docRef, user).then(() => {
-    //   document.forms[0].reset();
-    //   window.location.replace("chatroom.html");
-    // });
-  });
 });
 
 onAuthStateChanged(auth, (user) => {
-  console.log(user);
+  //console.log(user);
 });

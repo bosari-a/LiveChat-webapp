@@ -2,10 +2,10 @@ const path = require("path");
 
 module.exports = {
   mode: "development",
-  entry: "./src/login.js",
+  entry: "./src/index.js",
   output: {
     path: path.resolve(__dirname, "dist"),
-    filename: "login-bundle.js",
+    filename: "bundle.js",
   },
   devtool: "eval-source-map",
   watch: true,
@@ -24,10 +24,10 @@ module.exports = {
 
 module.exports = {
   mode: "development",
-  entry: "./src/index.js",
+  entry: "./src/login.js",
   output: {
     path: path.resolve(__dirname, "dist"),
-    filename: "bundle.js",
+    filename: "login-bundle.js",
   },
   devtool: "eval-source-map",
   watch: true,

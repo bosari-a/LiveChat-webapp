@@ -126,7 +126,7 @@ h2 {
   width: 100%;
 }
 .chatrooms {
-  width: 45vw;
+  width: 80vw;
   background: #43d9be;
   border-radius: 5px;
 }
@@ -139,7 +139,7 @@ h2 {
   width: max-content;
   border-radius: 5px;
   padding: 20px 0;
-  width: 45vw;
+  width: 80vw;
 }
 .down-arrow {
   color: white;
@@ -151,7 +151,7 @@ h2 {
   flex-wrap: wrap;
   gap: 10px;
   justify-content: center;
-  margin-bottom: 100px;
+  margin-bottom: 200px;
 }
 textarea {
   width: 60vw;
@@ -199,7 +199,8 @@ textarea:focus {
 /* user messages and message container styles */
 .message-container {
   width: 100vw;
-  padding-left: 15px;
+  padding-left: 25px;
+  padding-right: 10px;
   display: flex;
   flex-direction: column;
   gap: 30px;
@@ -293,6 +294,7 @@ textarea:focus {
 .dropdown-label {
   display: flex;
   justify-content: center;
+  cursor: pointer;
 }
 /* end */
 
@@ -317,7 +319,7 @@ textarea:focus {
   gap: 5px;
   border-radius: 5px;
   position: fixed;
-  top: 300px;
+  top: 20%;
   left: -136px;
   cursor: pointer;
 }
@@ -346,9 +348,6 @@ textarea:focus {
     gap: 30px;
     align-items: center;
   }
-  .hrefs {
-    top: 20%;
-  }
 }
 .test {
   position: absolute;
@@ -376,4 +375,40 @@ textarea:focus {
     background-color: white;
     width: 80vw;
   }
+  .chatrooms,
+  .rooms {
+    width: 45vw;
+  }
+}
+.board-set-to {
+  margin-bottom: 0;
+}
+.loading {
+  background-color: #333;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+}
+.three-dots {
+  width: 17px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+.edit-delete {
+  background-color: #333;
+  color: white;
+  padding: 5px;
+  border-radius: 5px;
+  width: 60px;
+}
+.edit-delete p {
+  cursor: pointer;
+  text-decoration: underline;
+}
+.change-post {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 20px;
 }
