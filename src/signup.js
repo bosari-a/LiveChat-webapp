@@ -79,12 +79,12 @@ signupForm.addEventListener("submit", (event) => {
             })
               .then(() => {
                 console.log("profile updated");
-                document.forms[0].reset();
+                //document.forms[0].reset();
                 document.querySelector(".loading").classList.add("display");
-                window.location.replace("chatroom.html");
+                //window.location.replace("chatroom.html");
               })
               .catch((err) => {
-                alert(err.message);
+                //alert(err.message);
                 document.querySelector(".loading").classList.add("display");
               });
           })
@@ -95,7 +95,7 @@ signupForm.addEventListener("submit", (event) => {
       }
     } catch (err) {
       alert(err.message);
-      document.forms[0].reset();
+      //document.forms[0].reset();
       document.querySelector(".loading").classList.add("display");
     }
   });

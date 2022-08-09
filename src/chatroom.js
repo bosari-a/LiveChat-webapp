@@ -15,13 +15,7 @@ import {
   Timestamp,
   deleteField,
 } from "firebase/firestore";
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut,
-} from "firebase/auth";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -319,6 +313,13 @@ function createUserMessage(chatLog, username, currentRoom) {
         <path class="three-dots" fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd" />
       </svg>
         <div class="edit-delete display"> <p class="edit">Edit</p> <p class="delete">delete</p> </div> </div>
+        <div class="delete-dialogue display">
+        Are you sure you want to delete this post? You can't undo this action.
+        <div class="options">
+          <div class="cancel">Cancel</div>
+          <div class="options-delete">delete</div>
+        </div>
+      </div>
             <span class="text-msg"
               ></span>
           `;
@@ -483,22 +484,22 @@ document.addEventListener("click", (e) => {
     });
   }
   if (e.target.classList.contains("delete")) {
-    console.log(
-      e.target.parentElement.parentElement.parentElement
-        .querySelector(".onmsg-username")
-        .innerText.slice(1)
-        .split(" ")
-        .join("")
-    );
-    let docRef = doc(
-      db,
-      "users",
-      e.target.parentElement.parentElement.parentElement
-        .querySelector(".onmsg-username")
-        .innerText.slice(1)
-        .split(" ")
-        .join("")
-    );
+    e.target.parentElement.classList.add("display");
+    e.target.parentElement.parentElement.parentElement
+      .querySelector(".delete-dialogue")
+      .classList.remove("display");
+  }
+
+  if (e.target.classList.contains("cancel")) {
+    e.target.parentElement.parentElement.classList.add("display");
+  }
+  if (e.target.classList.contains("options-delete")) {
+    let username = e.target.parentElement.parentElement.parentElement
+      .querySelector(".onmsg-username")
+      .innerText.slice(1)
+      .split(" ")
+      .join("");
+    let docRef = doc(db, "users", username);
     getDoc(docRef).then(() => {
       let data = {
         [`chatLog${e.target.parentElement.parentElement.parentElement
@@ -506,16 +507,18 @@ document.addEventListener("click", (e) => {
           .innerText.slice(1)}`]: deleteField(),
       };
       updateDoc(docRef, data).then(() => {
-        console.log("post deleted!");
+        console.log("post deleted successfully");
       });
     });
   }
+
   if (e.target.classList.contains("edit")) {
     if (
       !e.target.parentElement.parentElement.parentElement.querySelector(
         ".edit-text"
       )
     ) {
+      e.target.parentElement.classList.add("display");
       let docRef = doc(
         db,
         "users",
