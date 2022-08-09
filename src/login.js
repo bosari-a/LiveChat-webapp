@@ -1,23 +1,8 @@
 import { initializeApp } from "firebase/app";
-import {
-  getFirestore,
-  collection,
-  onSnapshot,
-  addDoc,
-  deleteDoc,
-  doc,
-  query,
-  where,
-  orderBy,
-  serverTimestamp,
-  updateDoc,
-  getDoc,
-} from "firebase/firestore";
+import { getFirestore, collection } from "firebase/firestore";
 import {
   getAuth,
-  createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signOut,
   onAuthStateChanged,
 } from "firebase/auth";
 
@@ -33,25 +18,29 @@ const firebaseConfig = {
 initializeApp(firebaseConfig);
 
 // database initiallize service
-const db = getFirestore();
 const auth = getAuth();
-// collection reference
-const colRef = collection(db, "users");
-console.log("hi");
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    window.location.replace("chatroom.html");
+  }
+});
+
 document.forms[0].addEventListener("submit", (event) => {
   event.preventDefault();
   document.querySelector(".loading").classList.remove("display");
   let password = document.forms[0].password.value;
   let email = document.forms[0].email.value;
-  signInWithEmailAndPassword(auth, email, password)
-    .then(() => {
-      window.location.replace("chatroom.html");
-    })
-    .catch((err) => {
-      alert(err.message);
-    });
-});
 
-onAuthStateChanged(auth, (user) => {
-  console.log(user);
+  try {
+    signInWithEmailAndPassword(auth, email, password)
+      .then(() => {
+        window.location.replace("chatroom.html");
+      })
+      .catch((err) => {
+        alert(err.message);
+        document.forms[0].reset();
+        document.querySelector(".loading").classList.add("display");
+      });
+  } catch (err) {}
 });

@@ -32,15 +32,13 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth();
-const user = auth.currentUser;
 
 const colRef = collection(db, "users");
-onSnapshot(colRef, (snapshot) => {
-  let users = [];
-  snapshot.docs.forEach((doc) => {
-    users.push({ ...doc.data(), id: doc.id });
-  });
-  console.log(users);
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    window.location.replace("chatroom.html");
+  }
 });
 
 const signupForm = document.forms[0];
@@ -51,22 +49,54 @@ signupForm.addEventListener("submit", (event) => {
   let emailAdress = signupForm.email.value;
   let password = signupForm.password.value;
   let usrname = signupForm.username.value;
-  let docRef = doc(db, "users", usrname);
-  createUserWithEmailAndPassword(auth, emailAdress, password)
-    .then(() => {
-      updateProfile(auth.currentUser, {
-        displayName: usrname,
-      }).then(() => {
-        console.log("profile updated");
-        document.forms[0].reset();
-        window.location.replace("chatroom.html");
-      });
-    })
-    .catch((err) => {
-      alert(err.message);
-    });
-});
 
-onAuthStateChanged(auth, (user) => {
-  //console.log(user);
+  onSnapshot(colRef, (snapshot) => {
+    let users = [];
+    let usernames = [];
+    snapshot.docs.forEach((doc) => {
+      users.push({ ...doc.data() });
+    });
+    for (const user in users) {
+      for (const chatlog in users[user]) {
+        if (users[user][chatlog].username) {
+          usernames.push(users[user][chatlog].username);
+        }
+      }
+    }
+    try {
+      //console.log(user);
+
+      if (usrname === "") {
+        throw Error("please enter a username");
+      } else if (usernames.includes(usrname)) {
+        throw Error("This username has already been taken");
+      } else {
+        //let docRef = doc(db, "users", usrname);
+        createUserWithEmailAndPassword(auth, emailAdress, password)
+          .then(() => {
+            updateProfile(auth.currentUser, {
+              displayName: usrname,
+            })
+              .then(() => {
+                console.log("profile updated");
+                document.forms[0].reset();
+                document.querySelector(".loading").classList.add("display");
+                window.location.replace("chatroom.html");
+              })
+              .catch((err) => {
+                alert(err.message);
+                document.querySelector(".loading").classList.add("display");
+              });
+          })
+          .catch((err) => {
+            alert(err.message);
+            document.querySelector(".loading").classList.add("display");
+          });
+      }
+    } catch (err) {
+      alert(err.message);
+      document.forms[0].reset();
+      document.querySelector(".loading").classList.add("display");
+    }
+  });
 });
