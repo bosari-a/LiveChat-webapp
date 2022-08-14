@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection } from "firebase/firestore";
+import { getFirestore, collection, onSnapshot } from "firebase/firestore";
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -19,8 +19,10 @@ initializeApp(firebaseConfig);
 
 // database initiallize service
 const auth = getAuth();
+const db = getFirestore();
+const colRef = collection(db, "user");
 
-onAuthStateChanged(auth, (user) => {
+const unsubAuth = onAuthStateChanged(auth, (user) => {
   if (user) {
     window.location.replace("chatroom.html");
   }
@@ -42,5 +44,7 @@ document.forms[0].addEventListener("submit", (event) => {
         document.forms[0].reset();
         document.querySelector(".loading").classList.add("display");
       });
-  } catch (err) {}
+  } catch (err) {
+    alert(err.message);
+  }
 });

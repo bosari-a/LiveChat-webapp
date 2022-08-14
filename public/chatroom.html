@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="chatroom.css" />
-    <title>Global Chat</title>
+    <link rel="stylesheet" href="css/chatroom.css" />
+    <title>SimpleBoard</title>
   </head>
   <body>
     <a name="top"></a>
@@ -37,9 +37,14 @@
             <span class="email"></span>
           </div>
         </div>
-        <input type="button" id="logout" class="logout-btn" value="Logout" />
+        <input
+          type="button"
+          id="logout"
+          class="logout-btn display"
+          value="Logout"
+        />
       </div>
-      <input class="display" type="button" id="login-btn" value="Login" />
+      <a href="login.html" id="login-btn">Login</a>
     </nav>
     <h1>Forum</h1>
     <h2>Choose a board from the dropdown</h2>
@@ -104,7 +109,9 @@
         </div>
       </div>
       <h2 class="board-set-to">Board is set to: <span id="set-room"></span></h2>
-      <h2>[<a href="#bottom" class="send-a-message">Send a message</a>]</h2>
+      <h2 class="send-a-message display">
+        [<a href="#bottom" class="send-a-message">Send a message</a>]
+      </h2>
 
       <div class="message-container">
         <!-- <div class="user-message">
@@ -158,7 +165,7 @@
         </div> -->
       </div>
 
-      <div class="user-input">
+      <div class="user-input display">
         <textarea name="" id="userinput" cols="50" rows="3"></textarea>
         <input id="send-btn" class="btn-form" type="submit" value="Send" />
         <a name="bottom"></a>
@@ -168,7 +175,7 @@
       </div>
     </form>
 
-    <script src="chatroom-bundle.js"></script>
+    <script src="js/chatroom-bundle.js"></script>
     <script>
       function checkSelectedRoom() {
         let checkboxes = document.querySelectorAll(".checkbox-input");

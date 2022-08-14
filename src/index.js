@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection } from "firebase/firestore";
 import { getAuth, signOut, onAuthStateChanged } from "firebase/auth";
+//import { me, User } from "./user.mjs";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBq80fW8JfWL7tFC-soOUZvxFZ-ygbVo-k",
@@ -16,7 +17,7 @@ initializeApp(firebaseConfig);
 // database initiallize service
 const db = getFirestore();
 const auth = getAuth();
-onAuthStateChanged(auth, (user) => {
+const unsubAuth = onAuthStateChanged(auth, (user) => {
   console.log(user);
   if (user) {
     document.querySelector("#login-btn").classList.add("display");
@@ -29,6 +30,7 @@ onAuthStateChanged(auth, (user) => {
     document.querySelector("#logout").classList.add("display");
   }
 });
+unsubAuth();
 
 const logoutBtn = document.querySelector("#logout");
 logoutBtn.addEventListener("click", (event) => {

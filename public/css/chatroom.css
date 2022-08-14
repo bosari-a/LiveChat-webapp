@@ -71,6 +71,7 @@ h2 {
   font-weight: 300;
   font-size: 22px;
   align-self: center;
+  text-decoration: none;
 }
 #login-btn:hover {
   box-shadow: 0 0 10000px inset rgb(0, 0, 0, 0.2);
@@ -237,7 +238,8 @@ textarea:focus {
 }
 .time-sent {
   color: #666;
-  font-size: 14px;
+  font-size: 13px;
+  margin-left: 2px;
 }
 .user-img {
   width: 30px;

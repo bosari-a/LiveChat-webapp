@@ -1,3 +1,6 @@
+// my imports
+import { User } from "./user.mjs";
+
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import {
@@ -7,6 +10,7 @@ import {
   doc,
   getDoc,
   setDoc,
+  addDoc,
 } from "firebase/firestore";
 import {
   getAuth,
@@ -33,70 +37,52 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth();
 
-const colRef = collection(db, "users");
-
-onAuthStateChanged(auth, (user) => {
+const unsubAuth = onAuthStateChanged(auth, (user) => {
   if (user) {
     window.location.replace("chatroom.html");
   }
 });
+unsubAuth();
 
 const signupForm = document.forms[0];
-
 signupForm.addEventListener("submit", (event) => {
   event.preventDefault();
-  document.querySelector(".loading").classList.remove("display");
-  let emailAdress = signupForm.email.value;
-  let password = signupForm.password.value;
-  let usrname = signupForm.username.value;
+  try {
+    if (!signupForm.username.value.match(/^[\w\s]+$/)) {
+      throw Error(
+        "Please enter a valid username (you can only use letters, numbers, and underscores)"
+      );
+    } else if (!signupForm.password.value.match(/^[^<>\s]{6,}$/)) {
+      throw Error(
+        "Your password should be valid and at least 6 characters long"
+      );
+    } else if (
+      signupForm.username.value.match(/^[\w\s]+$/) &&
+      signupForm.password.value.match(/^[^<>\s]{6,}$/)
+    ) {
+      let emailVal = signupForm.email.value;
+      let usernameVal = signupForm.username.value;
+      let password = signupForm.password.value;
 
-  onSnapshot(colRef, (snapshot) => {
-    let users = [];
-    let usernames = [];
-    snapshot.docs.forEach((doc) => {
-      users.push({ ...doc.data() });
-    });
-    for (const user in users) {
-      for (const chatlog in users[user]) {
-        if (users[user][chatlog].username) {
-          usernames.push(users[user][chatlog].username);
-        }
-      }
-    }
-    try {
-      //console.log(user);
+      createUserWithEmailAndPassword(auth, emailVal, password).then(() => {
+        //console.log(auth.currentUser);
 
-      if (usrname === "") {
-        throw Error("please enter a username");
-      } else if (usernames.includes(usrname)) {
-        throw Error("This username has already been taken");
-      } else {
-        //let docRef = doc(db, "users", usrname);
-        createUserWithEmailAndPassword(auth, emailAdress, password)
-          .then(() => {
-            updateProfile(auth.currentUser, {
-              displayName: usrname,
-            })
-              .then(() => {
-                console.log("profile updated");
-                //document.forms[0].reset();
-                document.querySelector(".loading").classList.add("display");
-                //window.location.replace("chatroom.html");
-              })
-              .catch((err) => {
-                //alert(err.message);
-                document.querySelector(".loading").classList.add("display");
-              });
-          })
-          .catch((err) => {
-            alert(err.message);
-            document.querySelector(".loading").classList.add("display");
+        let user = new User(usernameVal, emailVal);
+        console.log(user);
+        setDoc(
+          doc(db, "user", auth.currentUser.uid),
+          Object.assign({}, user)
+        ).then(() => {
+          console.log("doc set");
+          updateProfile(auth.currentUser, {
+            displayName: usernameVal,
+          }).then(() => {
+            window.location.replace("chatroom.html");
           });
-      }
-    } catch (err) {
-      alert(err.message);
-      //document.forms[0].reset();
-      document.querySelector(".loading").classList.add("display");
+        });
+      });
     }
-  });
+  } catch (err) {
+    //
+  }
 });
